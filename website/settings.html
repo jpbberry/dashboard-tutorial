@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <div id="main">
+        <select id = "guilds">
+
+        </select>
+        <input id = "newvalue" placeholder="New Value!">
+        <button onclick="setnewvalue()">Set</button>
+    </div>
+    <script>
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "https://discordapp.com/api/users/@me/guilds");
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.setRequestHeader("Authorization", "Bearer " + window.localStorage.token);
+        xhr.onload = function() {
+            var response = JSON.parse(xhr.response);
+            if(!response[0]) return alert("Invalid!");
+            response.forEach(guild=>{
+                if(guild.owner) {
+                    var selecter = document.createElement("option");
+                    selecter.innerHTML = guild.name;
+                    selecter.value = guild.id;
+                    document.getElementById("guilds").appendChild(selecter);
+                }
+            })
+        }
+        xhr.send();
+        function setnewvalue() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://localhost:3001/value");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify({
+                token: window.localStorage.token,
+                id: document.getElementById("guilds").value,
+                value: document.getElementById("newvalue").value
+            }));
+        }
+    </script>
+</body>
+</html>
